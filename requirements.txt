@@ -1,0 +1,11 @@
+boto3
+input-helper
+settings-helper
+dt-helper
+bg-helper
+click>=6.0
+
+# For development
+ipython
+pdbpp
+pytest
