@@ -9,8 +9,7 @@ def main():
     """Get info about EC2 instances"""
     ec2 = EC2()
     print('Fetching info about EC2 instances...')
-    instances = ec2.get_all_instances_filtered_data()
-    pprint(instances)
+    ec2.show_instance_info()
 
 
 if __name__ == '__main__':
