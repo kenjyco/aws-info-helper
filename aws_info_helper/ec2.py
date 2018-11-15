@@ -4,6 +4,11 @@ import input_helper as ih
 import dt_helper as dh
 
 
+FILTER_KEY_CONDITIONS = {
+    'Tags__Value': lambda x: x.get('Key') == 'Name'
+}
+
+
 class EC2(object):
     def __init__(self, profile_name='default'):
         session = boto3.Session(profile_name=profile_name)
@@ -24,15 +29,18 @@ class EC2(object):
             self._instances = instances
         return instances
 
-    def get_all_instances_filtered_data(self, cache=False, filter_keys=ah.EC2_INSTANCE_KEYS):
+    def get_all_instances_filtered_data(self, cache=False, filter_keys=ah.EC2_INSTANCE_KEYS,
+                                        conditions=FILTER_KEY_CONDITIONS):
         """Get all instances filtered on specified keys
 
         - cache: if True, cache results in self._instances
         - filter_keys: the keys that should be returned from full data with
           nesting allowed (default from EC2_INSTANCE_KEYS setting)
+        - conditions: dict of key names and single-var funcs that return bool
+          (default from FILTER_KEY_CONDITIONS variable)
         """
         instances = [
-            ih.filter_keys(instance, filter_keys)
+            ih.filter_keys(instance, filter_keys, **conditions)
             for instance in self.get_all_instances_full_data()
         ]
         if cache:
