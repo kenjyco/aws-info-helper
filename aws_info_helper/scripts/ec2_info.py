@@ -8,7 +8,7 @@ def main():
     """Get info about EC2 instances"""
     ec2 = EC2()
     print('Fetching info about EC2 instances...')
-    ec2.show_instance_info()
+    ec2.show_instance_info(cache=True)
     ih.start_ipython(ec2=ec2)
 
 
