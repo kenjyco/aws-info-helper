@@ -14,7 +14,7 @@ class EC2(object):
     def __init__(self, profile_name='default'):
         session = boto3.Session(profile_name=profile_name)
         self._ec2_client = session.client('ec2')
-        self._ec2_resource = session.resource('ec2')
+        self._profile = profile_name
         self._instances = []
         self._instance_strings = []
 
@@ -37,8 +37,12 @@ class EC2(object):
         - cache: if True, cache results in self._instances
         - filter_keys: the keys that should be returned from full data with
           nesting allowed (default from EC2_INSTANCE_KEYS setting)
+            - key name format: simple
+            - key name format: some.nested.key
         - conditions: dict of key names and single-var funcs that return bool
           (default from FILTER_KEY_CONDITIONS variable)
+            - key name format: simple
+            - key name format: some__nested__key
         """
         try:
             instances = [
