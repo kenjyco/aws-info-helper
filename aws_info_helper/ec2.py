@@ -3,10 +3,51 @@ import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
 from botocore.exceptions import EndpointConnectionError
+try:
+    import redis_helper as rh
+    from redis import ConnectionError as RedisConnectionError
+except ImportError:
+    AWS_EC2 = None
+else:
+    try:
+        AWS_EC2 = rh.Collection(
+            'aws',
+            'ec2',
+            unique_field='id',
+            index_fields='profile, type, pem, az, subnet, ami, name, status',
+            json_fields='sg'
+        )
+    except RedisConnectionError:
+        AWS_EC2 = None
 
 
 FILTER_KEY_CONDITIONS = {
     'Tags__Value': lambda x: x.get('Key') == 'Name'
+}
+
+KEY_VALUE_CASTING = {
+    'LaunchTime': lambda x: dh.utc_float_to_pretty(dh.dt_to_float_string(x))
+}
+
+KEY_NAME_MAPPING = {
+    'Architecture': 'arch',
+    'CpuOptions__CoreCount': 'cores',
+    'CpuOptions__ThreadsPerCore': 'threads_per_core',
+    'ImageId': 'ami',
+    'InstanceId': 'id',
+    'InstanceType': 'type',
+    'KeyName': 'pem',
+    'LaunchTime': 'launch',
+    'Placement__AvailabilityZone': 'az',
+    'PrivateDnsName': 'dns_private',
+    'PrivateIpAddress': 'ip_private',
+    'PublicDnsName': 'dns',
+    'PublicIpAddress': 'ip',
+    'SecurityGroups__GroupId': 'sg',
+    'State__Name': 'status',
+    'SubnetId': 'subnet',
+    'Tags__Value': 'name',
+    'VpcId': 'vpc',
 }
 
 
@@ -17,6 +58,7 @@ class EC2(object):
         self._profile = profile_name
         self._instances = []
         self._instance_strings = []
+        self._collection = AWS_EC2
 
     def get_all_instances_full_data(self, cache=False):
         """Get all instances with full data
@@ -63,6 +105,9 @@ class EC2(object):
     def get_cached_instance_strings(self):
         return self._instance_strings
 
+    def get_collection_object(self):
+        return self._collection
+
     def show_instance_info(self, item_format=ah.EC2_INSTANCE_INFO_FORMAT,
                            filter_keys=ah.EC2_INSTANCE_KEYS, force_refresh=False,
                            cache=False):
@@ -89,3 +134,26 @@ class EC2(object):
         if cache:
             self._instance_strings = strings
         print('\n'.join(strings))
+
+
+    def update_collection(self):
+        """Update the rh.Collection object if redis-helper installed"""
+        if self._collection is None:
+            return
+
+        updates = []
+        for instance in self.get_all_instances_filtered_data():
+            data = ih.cast_keys(instance, **KEY_VALUE_CASTING)
+            data = ih.rename_keys(data, **KEY_NAME_MAPPING)
+            data.update(dict(profile=self._profile))
+            old_data = self._collection[data['id']]
+            if not old_data:
+                updates.append(self._collection.add(**data))
+            else:
+                hash_id = old_data['_id']
+                try:
+                    data.pop(self._collection._unique_field)
+                except KeyError:
+                    pass
+                updates.extend(self._collection.update(hash_id, **data))
+        return updates
