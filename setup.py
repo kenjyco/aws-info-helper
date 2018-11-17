@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'ah-info-ec2=aws_info_helper.scripts.ec2_info:main',
+            'ah-collection-update-ec2=aws_info_helper.scripts.ec2_update_collection:main',
         ],
     },
     classifiers=[
