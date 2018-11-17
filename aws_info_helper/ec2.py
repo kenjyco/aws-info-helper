@@ -2,6 +2,7 @@ import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
+from botocore.exceptions import EndpointConnectionError
 
 
 FILTER_KEY_CONDITIONS = {
@@ -39,12 +40,17 @@ class EC2(object):
         - conditions: dict of key names and single-var funcs that return bool
           (default from FILTER_KEY_CONDITIONS variable)
         """
-        instances = [
-            ih.filter_keys(instance, filter_keys, **conditions)
-            for instance in self.get_all_instances_full_data()
-        ]
-        if cache:
-            self._instances = instances
+        try:
+            instances = [
+                ih.filter_keys(instance, filter_keys, **conditions)
+                for instance in self.get_all_instances_full_data()
+            ]
+        except EndpointConnectionError as e:
+            print(repr(e))
+            instances = []
+        else:
+            if cache:
+                self._instances = instances
         return instances
 
     def get_cached_instances(self):
