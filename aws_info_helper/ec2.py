@@ -2,7 +2,7 @@ import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
-from botocore.exceptions import EndpointConnectionError
+from botocore.exceptions import EndpointConnectionError, ClientError
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
@@ -66,8 +66,11 @@ class EC2(object):
         - cache: if True, cache results in self._instances
         """
         instances = []
-        for x in self._ec2_client.describe_instances()['Reservations']:
-            instances.extend(x['Instances'])
+        try:
+            for x in self._ec2_client.describe_instances()['Reservations']:
+                instances.extend(x['Instances'])
+        except (EndpointConnectionError, ClientError) as e:
+            print(repr(e))
         if cache:
             self._instances = instances
         return instances
@@ -86,17 +89,12 @@ class EC2(object):
             - key name format: simple
             - key name format: some__nested__key
         """
-        try:
-            instances = [
-                ih.filter_keys(instance, filter_keys, **conditions)
-                for instance in self.get_all_instances_full_data()
-            ]
-        except EndpointConnectionError as e:
-            print(repr(e))
-            instances = []
-        else:
-            if cache:
-                self._instances = instances
+        instances = [
+            ih.filter_keys(instance, filter_keys, **conditions)
+            for instance in self.get_all_instances_full_data()
+        ]
+        if cache:
+            self._instances = instances
         return instances
 
     def get_cached_instances(self):
