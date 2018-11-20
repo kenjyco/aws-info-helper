@@ -28,6 +28,7 @@ setup(
         'console_scripts': [
             'ah-info-ec2=aws_info_helper.scripts.ec2_info:main',
             'ah-collection-update-ec2=aws_info_helper.scripts.ec2_update_collection:main',
+            'ah-ssh-command-ec2=aws_info_helper.scripts.ec2_ssh_command:main',
         ],
     },
     classifiers=[

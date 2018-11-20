@@ -9,7 +9,7 @@ from aws_info_helper import EC2
     help='Do not start an ipython session at the end'
 )
 @click.option(
-    '--profile', '-p' 'profile', default='default',
+    '--profile', '-p', 'profile', default='default',
     help='Name of AWS profile to use'
 )
 def main(**kwargs):
