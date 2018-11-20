@@ -50,7 +50,6 @@ KEY_NAME_MAPPING = {
     'VpcId': 'vpc',
 }
 
-
 class EC2(object):
     def __init__(self, profile_name='default'):
         session = boto3.Session(profile_name=profile_name)
@@ -139,12 +138,24 @@ class EC2(object):
         if self._collection is None:
             return
 
+        ids_for_profile = set([
+            x.get(self._collection._unique_field)
+            for x in self._collection.find(
+                'profile:{}'.format(self._profile),
+                include_meta=False,
+                get_fields=self._collection._unique_field,
+                limit=self._collection.size
+            )
+        ])
+        ids = set()
         updates = []
+        deletes = []
         for instance in self.get_all_instances_filtered_data():
             data = ih.cast_keys(instance, **KEY_VALUE_CASTING)
             data = ih.rename_keys(data, **KEY_NAME_MAPPING)
             data.update(dict(profile=self._profile))
             old_data = self._collection[data['id']]
+            ids.add(data['id'])
             if not old_data:
                 updates.append(self._collection.add(**data))
             else:
@@ -154,4 +165,10 @@ class EC2(object):
                 except KeyError:
                     pass
                 updates.extend(self._collection.update(hash_id, **data))
-        return updates
+
+        for instance_id in ids_for_profile - ids:
+            hash_id = self._collection.get_hash_id_for_unique_value(instance_id)
+            if hash_id is not None:
+                self._collection.delete(hash_id)
+                deletes.append(hash_id)
+        return {'updates': updates, 'deletes': deletes}
