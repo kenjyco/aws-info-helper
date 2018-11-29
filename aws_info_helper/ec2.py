@@ -15,7 +15,8 @@ else:
             'ec2',
             unique_field='id',
             index_fields='profile, type, pem, az, subnet, ami, name, status',
-            json_fields='sg'
+            json_fields='sg',
+            insert_ts=True
         )
     except RedisConnectionError:
         AWS_EC2 = None
