@@ -2,6 +2,7 @@ import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
+from functools import partial
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
@@ -55,28 +56,38 @@ class EC2(object):
         session = boto3.Session(profile_name=profile_name)
         self._ec2_client = session.client('ec2')
         self._profile = profile_name
-        self._instances = []
-        self._instance_strings = []
+        self._cache = {}
         self._collection = AWS_EC2
         self.client_call = partial(ah.client_call, self._ec2_client)
+
+    def get_cached(self):
+        return self._cache
+
+    @property
+    def cached_instances(self):
+        return self._cache.get('instances', [])
+
+    @property
+    def cached_instance_strings(self):
+        return self._cache.get('instance_strings', [])
 
     def get_all_instances_full_data(self, cache=False):
         """Get all instances with full data
 
-        - cache: if True, cache results in self._instances
+        - cache: if True, cache results in self._cache['instances']
         """
         instances = []
         for x in self.client_call('describe_instances', 'Reservations'):
             instances.extend(x['Instances'])
         if cache:
-            self._instances = instances
+            self._cache['instances'] = instances
         return instances
 
     def get_all_instances_filtered_data(self, cache=False, filter_keys=ah.EC2_INSTANCE_KEYS,
                                         conditions=INSTANCE_FILTER_KEY_CONDITIONS):
         """Get all instances filtered on specified keys
 
-        - cache: if True, cache results in self._instances
+        - cache: if True, cache results in self._cache['instances']
         - filter_keys: the keys that should be returned from full data with
           nesting allowed (default from EC2_INSTANCE_KEYS setting)
             - key name format: simple
@@ -91,14 +102,10 @@ class EC2(object):
             for instance in self.get_all_instances_full_data()
         ]
         if cache:
-            self._instances = instances
+            self._cache['instances'] = instances
         return instances
 
-    def get_cached_instances(self):
-        return self._instances
 
-    def get_cached_instance_strings(self):
-        return self._instance_strings
 
     def get_collection_object(self):
         return self._collection
@@ -117,17 +124,17 @@ class EC2(object):
               instance info
         - force_refresh: if True, fetch instance data with
           self.get_all_instances_filtered_data()
-        - cache: if True, cache results in self._instance_strings
+        - cache: if True, cache results in self._cache['instance_strings']
         """
-        if not self._instances or force_refresh:
+        if not 'instances' in self._cache or force_refresh:
             self.get_all_instances_filtered_data(cache=True, filter_keys=filter_keys)
         make_string = ih.get_string_maker(item_format)
         strings = [
             make_string(instance)
-            for instance in self._instances
+            for instance in self.cached_instances
         ]
         if cache:
-            self._instance_strings = strings
+            self._cache['instance_strings'] = strings
         print('\n'.join(strings))
 
 
