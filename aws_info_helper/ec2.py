@@ -71,6 +71,66 @@ class EC2(object):
     def cached_instance_strings(self):
         return self._cache.get('instance_strings', [])
 
+    @property
+    def cached_azs(self):
+        return self._cache.get('azs', [])
+
+    @property
+    def cached_customer_gateways(self):
+        return self._cache.get('customer_gateways', [])
+
+    @property
+    def cached_internet_gateways(self):
+        return self._cache.get('internet_gateways', [])
+
+    @property
+    def cached_keypairs(self):
+        return self._cache.get('keypairs', [])
+
+    @property
+    def cached_nat_gateways(self):
+        return self._cache.get('nat_gateways', [])
+
+    @property
+    def cached_network_acls(self):
+        return self._cache.get('network_acls', [])
+
+    @property
+    def cached_network_interfaces(self):
+        return self._cache.get('network_interfaces', [])
+
+    @property
+    def cached_regions(self):
+        return self._cache.get('regions', [])
+
+    @property
+    def cached_route_tables(self):
+        return self._cache.get('route_tables', [])
+
+    @property
+    def cached_security_groups(self):
+        return self._cache.get('security_groups', [])
+
+    @property
+    def cached_subnets(self):
+        return self._cache.get('subnets', [])
+
+    @property
+    def cached_tags(self):
+        return self._cache.get('tags', [])
+
+    @property
+    def cached_volume_statuses(self):
+        return self._cache.get('volume_statuses', [])
+
+    @property
+    def cached_volumes(self):
+        return self._cache.get('volumes', [])
+
+    @property
+    def cached_vpcs(self):
+        return self._cache.get('vpcs', [])
+
     def get_all_instances_full_data(self, cache=False):
         """Get all instances with full data
 
@@ -105,10 +165,155 @@ class EC2(object):
             self._cache['instances'] = instances
         return instances
 
+    def get_all_azs_full_data(self, cache=False):
+        """Get all availibility zones with full data
 
+        - cache: if True, cache results in self._cache['azs']
+        """
+        azs = self.client_call('describe_availability_zones', 'AvailabilityZones')
+        if cache:
+            self._cache['azs'] = azs
+        return azs
 
-    def get_collection_object(self):
-        return self._collection
+    def get_all_customer_gateways_full_data(self, cache=False):
+        """Get all customer gateways with full data
+
+        - cache: if True, cache results in self._cache['customer_gateways']
+        """
+        gateways = self.client_call('describe_customer_gateways', 'CustomerGateways')
+        if cache:
+            self._cache['customer_gateways'] = gateways
+        return gateways
+
+    def get_all_internet_gateways_full_data(self, cache=False):
+        """Get all internet gateways with full data
+
+        - cache: if True, cache results in self._cache['internet_gateways']
+        """
+        gateways = self.client_call('describe_internet_gateways', 'InternetGateways')
+        if cache:
+            self._cache['internet_gateways'] = gateways
+        return gateways
+
+    def get_all_keypairs_full_data(self, cache=False):
+        """Get all keypairs with full data
+
+        - cache: if True, cache results in self._cache['keypairs']
+        """
+        keypairs = self.client_call('describe_key_pairs', 'KeyPairs')
+        if cache:
+            self._cache['keypairs'] = keypairs
+        return keypairs
+
+    def get_all_nat_gateways_full_data(self, cache=False):
+        """Get all nat gateways with full data
+
+        - cache: if True, cache results in self._cache['nat_gateways']
+        """
+        gateways = self.client_call('describe_nat_gateways', 'NatGateways')
+        if cache:
+            self._cache['nat_gateways'] = gateways
+        return gateways
+
+    def get_all_network_acls_full_data(self, cache=False):
+        """Get all network acls with full data
+
+        - cache: if True, cache results in self._cache['network_acls']
+        """
+        network_acls = self.client_call('describe_network_acls', 'NetworkAcls')
+        if cache:
+            self._cache['network_acls'] = network_acls
+        return network_acls
+
+    def get_all_network_interfaces_full_data(self, cache=False):
+        """Get all network interfaces with full data
+
+        - cache: if True, cache results in self._cache['network_interfaces']
+        """
+        network_interfaces = self.client_call('describe_network_interfaces', 'NetworkInterfaces')
+        if cache:
+            self._cache['network_interfaces'] = network_interfaces
+        return network_interfaces
+
+    def get_all_regions_full_data(self, cache=False):
+        """Get all regions with full data
+
+        - cache: if True, cache results in self._cache['regions']
+        """
+        regions = self.client_call('describe_regions', 'Regions')
+        if cache:
+            self._cache['regions'] = regions
+        return regions
+
+    def get_all_route_tables_full_data(self, cache=False):
+        """Get all route tables with full data
+
+        - cache: if True, cache results in self._cache['route_tables']
+        """
+        route_tables = self.client_call('describe_route_tables', 'RouteTables')
+        if cache:
+            self._cache['route_tables'] = route_tables
+        return route_tables
+
+    def get_all_security_groups_full_data(self, cache=False):
+        """Get all security_groups with full data
+
+        - cache: if True, cache results in self._cache['security_groups']
+        """
+        security_groups = self.client_call('describe_security_groups', 'SecurityGroups')
+        if cache:
+            self._cache['security_groups'] = security_groups
+        return security_groups
+
+    def get_all_subnets_full_data(self, cache=False):
+        """Get all subnets with full data
+
+        - cache: if True, cache results in self._cache['subnets']
+        """
+        subnets = self.client_call('describe_subnets', 'Subnets')
+        if cache:
+            self._cache['subnets'] = subnets
+        return subnets
+
+    def get_all_tags_full_data(self, cache=False):
+        """Get all tags with full data
+
+        - cache: if True, cache results in self._cache['tags']
+        """
+        tags = self.client_call('describe_tags', 'Tags')
+        if cache:
+            self._cache['tags'] = tags
+        return tags
+
+    def get_all_volume_statuses_full_data(self, cache=False):
+        """Get all volume statuses with full data
+
+        - cache: if True, cache results in self._cache['volume_statuses']
+        """
+        volume_statuses = self.client_call('describe_volume_status', 'VolumeStatuses')
+        if cache:
+            self._cache['volume_statuses'] = volume_statuses
+        return volume_statuses
+
+    def get_all_volumes_full_data(self, cache=False):
+        """Get all volumes with full data
+
+        - cache: if True, cache results in self._cache['volumes']
+        """
+        volumes = self.client_call('describe_volumes', 'Volumes')
+        if cache:
+            self._cache['volumes'] = volumes
+        return volumes
+
+    def get_all_vpcs_full_data(self, cache=False):
+        """Get all vpcs with full data
+
+        - cache: if True, cache results in self._cache['vpcs']
+        """
+        vpcs = self.client_call('describe_vpcs', 'Vpcs')
+        if cache:
+            self._cache['vpcs'] = vpcs
+        return vpcs
 
     def show_instance_info(self, item_format=ah.EC2_INSTANCE_INFO_FORMAT,
                            filter_keys=ah.EC2_INSTANCE_KEYS, force_refresh=False,
