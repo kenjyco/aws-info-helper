@@ -21,15 +21,15 @@ else:
         AWS_EC2 = None
 
 
-FILTER_KEY_CONDITIONS = {
+INSTANCE_FILTER_KEY_CONDITIONS = {
     'Tags__Value': lambda x: x.get('Key') == 'Name'
 }
 
-KEY_VALUE_CASTING = {
+INSTANCE_KEY_VALUE_CASTING = {
     'LaunchTime': lambda x: dh.utc_float_to_pretty(dh.dt_to_float_string(x))
 }
 
-KEY_NAME_MAPPING = {
+INSTANCE_KEY_NAME_MAPPING = {
     'Architecture': 'arch',
     'CpuOptions__CoreCount': 'cores',
     'CpuOptions__ThreadsPerCore': 'threads_per_core',
@@ -73,7 +73,7 @@ class EC2(object):
         return instances
 
     def get_all_instances_filtered_data(self, cache=False, filter_keys=ah.EC2_INSTANCE_KEYS,
-                                        conditions=FILTER_KEY_CONDITIONS):
+                                        conditions=INSTANCE_FILTER_KEY_CONDITIONS):
         """Get all instances filtered on specified keys
 
         - cache: if True, cache results in self._instances
@@ -82,7 +82,7 @@ class EC2(object):
             - key name format: simple
             - key name format: some.nested.key
         - conditions: dict of key names and single-var funcs that return bool
-          (default from FILTER_KEY_CONDITIONS variable)
+          (default from INSTANCE_FILTER_KEY_CONDITIONS variable)
             - key name format: simple
             - key name format: some__nested__key
         """
@@ -149,8 +149,8 @@ class EC2(object):
         updates = []
         deletes = []
         for instance in self.get_all_instances_filtered_data():
-            data = ih.cast_keys(instance, **KEY_VALUE_CASTING)
-            data = ih.rename_keys(data, **KEY_NAME_MAPPING)
+            data = ih.cast_keys(instance, **INSTANCE_KEY_VALUE_CASTING)
+            data = ih.rename_keys(data, **INSTANCE_KEY_NAME_MAPPING)
             data.update(dict(profile=self._profile))
             old_data = self._collection[data['id']]
             ids.add(data['id'])
