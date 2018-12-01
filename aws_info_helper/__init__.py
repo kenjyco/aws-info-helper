@@ -3,6 +3,7 @@ import os.path
 import settings_helper as sh
 import bg_helper as bh
 from os import walk
+from botocore.exceptions import EndpointConnectionError, ClientError
 
 
 get_setting = sh.settings_getter(__name__)
@@ -17,6 +18,25 @@ SSH_USERS = [
     'fedora',
     'root',
 ]
+
+
+def client_call(client, method_name, main_key=''):
+    """Call a boto client method and return retrieved data
+
+    - client: boto3.Session.client instance
+    - method_name: name of the client method to execute
+    - main_key: the name of the main top-level key in the response that has the
+      actual relevant info
+    """
+    results = []
+    try:
+        results = getattr(client, method_name)()
+    except (EndpointConnectionError, ClientError) as e:
+        print(repr(e))
+    else:
+        if main_key:
+            results = results.get(main_key)
+    return results
 
 
 def get_profiles():

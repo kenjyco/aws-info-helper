@@ -2,7 +2,6 @@ import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
-from botocore.exceptions import EndpointConnectionError, ClientError
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
@@ -59,6 +58,7 @@ class EC2(object):
         self._instances = []
         self._instance_strings = []
         self._collection = AWS_EC2
+        self.client_call = partial(ah.client_call, self._ec2_client)
 
     def get_all_instances_full_data(self, cache=False):
         """Get all instances with full data
@@ -66,11 +66,8 @@ class EC2(object):
         - cache: if True, cache results in self._instances
         """
         instances = []
-        try:
-            for x in self._ec2_client.describe_instances()['Reservations']:
-                instances.extend(x['Instances'])
-        except (EndpointConnectionError, ClientError) as e:
-            print(repr(e))
+        for x in self.client_call('describe_instances', 'Reservations'):
+            instances.extend(x['Instances'])
         if cache:
             self._instances = instances
         return instances
