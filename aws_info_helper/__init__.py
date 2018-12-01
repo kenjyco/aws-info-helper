@@ -72,7 +72,10 @@ def do_ssh(ip, pem_file, user, command='', timeout=None, verbose=False):
     - ip: IP address
     - pem_file: absolute path to pem file
     - user: remote SSH user
-    - command:
+    - command: an optional command to run on the remote server
+        - if a command is specified, it will be run on the remote server and
+          the output will be returned
+        - if no command is specified, the SSH session will be interactive
     """
     ssh_command = 'ssh -i {} -o "StrictHostKeyChecking no" {}@{}'
     cmd = ssh_command.format(pem_file, user, ip)
