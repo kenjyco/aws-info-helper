@@ -1,7 +1,7 @@
 import click
 import aws_info_helper as ah
 import input_helper as ih
-from aws_info_helper.ec2 import KEY_NAME_MAPPING
+from aws_info_helper.ec2 import INSTANCE_KEY_NAME_MAPPING
 
 
 @click.command()
@@ -69,7 +69,7 @@ def main(**kwargs):
                     instance,
                     'Tags__Value, State__Name, KeyName, InstanceId, PublicIpAddress'
                 ),
-                **KEY_NAME_MAPPING
+                **INSTANCE_KEY_NAME_MAPPING
             )
             for instance in ih.find_items(instances, find)
         ]
