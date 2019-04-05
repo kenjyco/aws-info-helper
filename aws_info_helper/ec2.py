@@ -54,11 +54,11 @@ INSTANCE_KEY_NAME_MAPPING = {
 class EC2(object):
     def __init__(self, profile_name='default'):
         session = boto3.Session(profile_name=profile_name)
-        self._ec2_client = session.client('ec2')
+        self._client = session.client('ec2')
         self._profile = profile_name
         self._cache = {}
         self._collection = AWS_EC2
-        self.client_call = partial(ah.client_call, self._ec2_client)
+        self.client_call = partial(ah.client_call, self._client)
 
     def get_cached(self):
         return self._cache
