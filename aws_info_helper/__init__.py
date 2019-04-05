@@ -9,6 +9,8 @@ from botocore.exceptions import EndpointConnectionError, ClientError
 get_setting = sh.settings_getter(__name__)
 EC2_INSTANCE_KEYS = get_setting('EC2_INSTANCE_KEYS')
 EC2_INSTANCE_INFO_FORMAT = get_setting('EC2_INSTANCE_INFO_FORMAT')
+ROUTE53_ZONE_KEYS = get_setting('ROUTE53_ZONE_KEYS')
+ROUTE53_RESOURCE_KEYS = get_setting('ROUTE53_RESOURCE_KEYS')
 
 SSH_USERS = [
     'ec2-user',
@@ -108,3 +110,4 @@ def determine_ssh_user(ip, pem_file, verbose=False):
 
 
 from aws_info_helper.ec2 import EC2, AWS_EC2
+from aws_info_helper.route53 import Route53, AWS_ROUTE53
