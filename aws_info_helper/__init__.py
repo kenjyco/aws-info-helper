@@ -20,17 +20,18 @@ SSH_USERS = [
 ]
 
 
-def client_call(client, method_name, main_key=''):
+def client_call(client, method_name, main_key='', **kwargs):
     """Call a boto client method and return retrieved data
 
     - client: boto3.Session.client instance
     - method_name: name of the client method to execute
     - main_key: the name of the main top-level key in the response that has the
       actual relevant info
+    - kwargs: any keyword args that need to be passed to the client method
     """
     results = []
     try:
-        results = getattr(client, method_name)()
+        results = getattr(client, method_name)(**kwargs)
     except (EndpointConnectionError, ClientError) as e:
         print(repr(e))
     else:
