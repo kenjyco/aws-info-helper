@@ -9,6 +9,7 @@ from botocore.exceptions import EndpointConnectionError, ClientError
 get_setting = sh.settings_getter(__name__)
 EC2_INSTANCE_KEYS = get_setting('EC2_INSTANCE_KEYS')
 EC2_INSTANCE_INFO_FORMAT = get_setting('EC2_INSTANCE_INFO_FORMAT')
+EC2_ADDRESS_KEYS = get_setting('EC2_ADDRESS_KEYS')
 ROUTE53_ZONE_KEYS = get_setting('ROUTE53_ZONE_KEYS')
 ROUTE53_RESOURCE_KEYS = get_setting('ROUTE53_RESOURCE_KEYS')
 

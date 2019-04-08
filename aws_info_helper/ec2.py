@@ -51,6 +51,12 @@ INSTANCE_KEY_NAME_MAPPING = {
     'VpcId': 'vpc',
 }
 
+ADDRESS_KEY_NAME_MAPPING = {
+    'PublicIp': 'ip',
+    'InstanceId': 'instance',
+}
+
+
 class EC2(object):
     def __init__(self, profile_name='default'):
         session = boto3.Session(profile_name=profile_name)
@@ -66,6 +72,10 @@ class EC2(object):
     @property
     def cached_instances(self):
         return self._cache.get('instances', [])
+
+    @property
+    def cached_addressess(self):
+        return self._cache.get('addressess', [])
 
     @property
     def cached_instance_strings(self):
@@ -164,6 +174,33 @@ class EC2(object):
         if cache:
             self._cache['instances'] = instances
         return instances
+
+    def get_all_addresses_full_data(self, cache=False):
+        """Get all addresses with full data
+
+        - cache: if True, cache results in self._cache['addresses']
+        """
+        addresses = self.client_call('describe_addresses', 'Addresses')
+        if cache:
+            self._cache['addresses'] = addresses
+        return addresses
+
+    def get_all_addresses_filtered_data(self, cache=False, filter_keys=ah.EC2_ADDRESS_KEYS):
+        """Get all addresses filtered on specified keys
+
+        - cache: if True, cache results in self._cache['addresses']
+        - filter_keys: the keys that should be returned from full data with
+          nesting allowed (default from EC2_ADDRESS_KEYS setting)
+            - key name format: simple
+            - key name format: some.nested.key
+        """
+        addresses = [
+            ih.filter_keys(address, filter_keys)
+            for address in self.get_all_addresses_full_data()
+        ]
+        if cache:
+            self._cache['addresses'] = addresses
+        return addresses
 
     def get_all_azs_full_data(self, cache=False):
         """Get all availibility zones with full data
