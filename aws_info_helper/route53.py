@@ -131,6 +131,13 @@ class Route53(object):
                 elif resource_data['type'] == 'A':
                     if resource_data['alias'] is not None:
                         resource_data['external'] = 'yes'
+                if resource_data['subdomain']:
+                    resource_data['name'] = '{}.{}'.format(
+                        resource_data['subdomain'],
+                        resource_data['domain']
+                    )
+                else:
+                    resource_data['name'] = resource_data['domain']
                 results.append(resource_data)
         if cache:
             self._cache['record_sets'] = results
