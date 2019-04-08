@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='aws-info-helper',
-    version='0.0.9',
+    version='0.0.10',
     description='CLI helpers for AWS info gathering using Boto3',
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/aws-info-helper',
-    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.9',
+    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.10',
     packages=find_packages(),
     install_requires=[
         'boto3',
