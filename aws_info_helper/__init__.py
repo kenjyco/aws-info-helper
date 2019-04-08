@@ -131,3 +131,4 @@ def determine_ssh_user(ip, pem_file, verbose=False):
 from aws_info_helper.ec2 import EC2, AWS_EC2
 from aws_info_helper.route53 import Route53, AWS_ROUTE53
 from aws_info_helper.s3 import S3, AWS_S3, AWS_S3_LAST_FILE
+from aws_info_helper.parameter_store import ParameterStore
