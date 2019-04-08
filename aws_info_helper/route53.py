@@ -25,7 +25,8 @@ ZONE_KEY_VALUE_CASTING = {
 }
 
 RESOURCE_KEY_VALUE_CASTING = {
-    'Name': lambda x: x.strip('.')
+    'Name': lambda x: x.strip('.'),
+    'ResourceRecords__Value': lambda x: x.strip('.')
 }
 
 ZONE_KEY_NAME_MAPPING = {
@@ -60,6 +61,10 @@ class Route53(object):
     @property
     def cached_record_sets(self):
         return self._cache.get('record_sets', [])
+
+    @property
+    def cached_resource_strings(self):
+        return self._cache.get('resource_strings', [])
 
     def get_all_hosted_zones_full_data(self, cache=False):
         """Get all hosted zones with full data
@@ -142,6 +147,29 @@ class Route53(object):
         if cache:
             self._cache['record_sets'] = results
         return results
+
+    def show_resource_info(self, item_format=ah.ROUTE53_RESOURCE_INFO_FORMAT,
+                           force_refersh=False, cache=False):
+        """
+        Show info about cached resources (will fetch/cache if none cached)
+
+        - item_format: format string for lines of output (default from
+          ROUTE53_RESOURCE_INFO_FORMAT setting)
+        - force_refresh: if True, fetch resource data with
+          self.get_all_record_sets_for_all_zones()
+        - cache: if True, cache results in self._cache['resource_strings']
+        """
+        if not 'record_sets' in self._cache or force_refresh:
+            self.get_all_record_sets_for_all_zones(cache=True)
+        make_string = ih.get_string_maker(item_format)
+        strings = [
+            make_string(record)
+            for record in self.cached_record_sets
+        ]
+        if cache:
+            self._cache['resource_strings'] = strings
+        print('\n'.join(strings))
+
 
     def update_collection(self):
         """Update the rh.Collection object if redis-helper installed"""
