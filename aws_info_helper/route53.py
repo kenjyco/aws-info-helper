@@ -13,7 +13,7 @@ else:
         AWS_ROUTE53 = rh.Collection(
             'aws',
             'route53',
-            index_fields='domain, subdomain, type, external',
+            index_fields='profile, domain, subdomain, type, external',
             rx_external='(yes|no)',
         )
     except RedisConnectionError:
@@ -179,5 +179,6 @@ class Route53(object):
         updates = []
         self._collection.clear_keyspace()
         for data in self.get_all_record_sets_for_all_zones():
+            data.update(dict(profile=self._profile))
             updates.append(self._collection.add(**data))
         return {'updates': updates}
