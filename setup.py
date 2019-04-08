@@ -31,6 +31,7 @@ setup(
             'ah-ssh-command-ec2=aws_info_helper.scripts.ec2_ssh_command:main',
             'ah-info-route53=aws_info_helper.scripts.route53_info:main',
             'ah-collection-update-route53=aws_info_helper.scripts.route53_update_collection:main',
+            'ah-collection-update-s3=aws_info_helper.scripts.s3_update_collection:main',
         ],
     },
     classifiers=[
