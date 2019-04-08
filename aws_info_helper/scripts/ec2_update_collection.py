@@ -1,6 +1,6 @@
 import click
 import input_helper as ih
-from aws_info_helper import EC2, AWS_EC2, get_profiles
+from aws_info_helper import EC2, AWS_EC2, AWS_IP, get_profiles
 
 
 @click.command()
@@ -26,7 +26,7 @@ def main(**kwargs):
         ec2 = EC2(kwargs['profile'])
         ec2.update_collection()
     if kwargs['non_interactive'] is not True:
-        ih.start_ipython(ec2=AWS_EC2)
+        ih.start_ipython(ec2=AWS_EC2, ip=AWS_IP)
 
 
 if __name__ == '__main__':

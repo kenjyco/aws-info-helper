@@ -4,6 +4,22 @@ import settings_helper as sh
 import bg_helper as bh
 from os import walk
 from botocore.exceptions import EndpointConnectionError, ClientError
+try:
+    import redis_helper as rh
+    from redis import ConnectionError as RedisConnectionError
+except ImportError:
+    AWS_IP = None
+else:
+    try:
+        AWS_IP = rh.Collection(
+            'aws',
+            'ip',
+            index_fields='ip, name, source',
+            reference_fields='instance--aws:ec2',
+            insert_ts=True
+        )
+    except RedisConnectionError:
+        AWS_IP = None
 
 
 get_setting = sh.settings_getter(__name__)
@@ -13,6 +29,7 @@ EC2_ADDRESS_KEYS = get_setting('EC2_ADDRESS_KEYS')
 ROUTE53_ZONE_KEYS = get_setting('ROUTE53_ZONE_KEYS')
 ROUTE53_RESOURCE_KEYS = get_setting('ROUTE53_RESOURCE_KEYS')
 ROUTE53_RESOURCE_INFO_FORMAT = get_setting('ROUTE53_RESOURCE_INFO_FORMAT')
+IP_RX = re.compile(r'(?:\d{1,3}\.)+\d{1,3}')
 
 SSH_USERS = [
     'ec2-user',

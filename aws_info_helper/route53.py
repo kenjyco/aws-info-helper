@@ -179,6 +179,18 @@ class Route53(object):
         updates = []
         self._collection.clear_keyspace()
         for data in self.get_all_record_sets_for_all_zones():
+            value = data.get('value')
+            if value is not None and ah.IP_RX.match(value):
+                existing = ah.AWS_IP.find(
+                    'ip:{}, name:{}'.format(value, data['name']),
+                    include_meta=False
+                )
+                if not existing:
+                    updates.append(ah.AWS_IP.add(
+                        ip=value,
+                        name=data['name'],
+                        source='route53',
+                    ))
             data.update(dict(profile=self._profile))
             updates.append(self._collection.add(**data))
         return {'updates': updates}

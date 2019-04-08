@@ -418,4 +418,18 @@ class EC2(object):
             if hash_id is not None:
                 self._collection.delete(hash_id)
                 deletes.append(hash_id)
+
+        for address in self.get_all_addresses_filtered_data():
+            data = ih.rename_keys(address, **ADDRESS_KEY_NAME_MAPPING)
+            existing = ah.AWS_IP.find(
+                'ip:{}, source:ec2'.format(data['ip']),
+                include_meta=False
+            )
+            if not existing:
+                updates.append(ah.AWS_IP.add(
+                    ip=data['ip'],
+                    instance=data['instance'],
+                    source='ec2',
+                ))
+
         return {'updates': updates, 'deletes': deletes}

@@ -1,6 +1,6 @@
 import click
 import input_helper as ih
-from aws_info_helper import Route53, AWS_ROUTE53, get_profiles
+from aws_info_helper import Route53, AWS_ROUTE53, AWS_IP, get_profiles
 
 
 @click.command()
@@ -26,7 +26,7 @@ def main(**kwargs):
         route53 = Route53(kwargs['profile'])
         route53.update_collection()
     if kwargs['non_interactive'] is not True:
-        ih.start_ipython(route53=AWS_ROUTE53)
+        ih.start_ipython(route53=AWS_ROUTE53, ip=AWS_IP)
 
 
 if __name__ == '__main__':
