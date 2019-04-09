@@ -165,7 +165,7 @@ class S3(object):
                     )
         return results
 
-    def dowload_file(self, bucket, filename, local_filename=''):
+    def download_file(self, bucket, filename, local_filename=''):
         """Download a file from S3
 
         - bucket: name of S3 bucket
