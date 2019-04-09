@@ -3,7 +3,7 @@ import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
 from functools import partial
-from os.path import isdir, dirname, basename
+from os.path import isdir, dirname, basename, join
 from os import makedirs
 try:
     import redis_helper as rh
@@ -171,19 +171,23 @@ class S3(object):
         - bucket: name of S3 bucket
         - filename: name of file (key) in S3 bucket
         - local_filename: local file name (including path) to save file as
+            - if an existing directory is given, the file will be saved in there
         """
         if not local_filename:
             local_filename = basename(filename)
+        elif isdir(local_filename):
+            local_filename = join(local_filename, basename(filename))
         local_dir = dirname(local_filename)
         if local_dir:
             if not isdir(local_dir):
                 makedirs(local_dir)
-        return self.client_call(
+        result = self.client_call(
             'download_file',
             Bucket=bucket,
             Key=filename,
             Filename=local_filename
         )
+        return local_filename
 
     def get_file_lister_for_bucket(self, bucket, prefix='', limit=1500):
         """Return a func that will list next limit files for a bucket at a prefix
