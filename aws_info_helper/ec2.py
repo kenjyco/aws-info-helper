@@ -175,8 +175,8 @@ class EC2(object):
             self._cache['instances'] = instances
         return instances
 
-    def get_all_addresses_full_data(self, cache=False):
-        """Get all addresses with full data
+    def get_elastic_addresses_full_data(self, cache=False):
+        """Get all elastic ip addresses with full data
 
         - cache: if True, cache results in self._cache['addresses']
         """
@@ -185,8 +185,8 @@ class EC2(object):
             self._cache['addresses'] = addresses
         return addresses
 
-    def get_all_addresses_filtered_data(self, cache=False, filter_keys=ah.EC2_ADDRESS_KEYS):
-        """Get all addresses filtered on specified keys
+    def get_elastic_addresses_filtered_data(self, cache=False, filter_keys=ah.EC2_ADDRESS_KEYS):
+        """Get all elastic ip addresses filtered on specified keys
 
         - cache: if True, cache results in self._cache['addresses']
         - filter_keys: the keys that should be returned from full data with
@@ -196,7 +196,7 @@ class EC2(object):
         """
         addresses = [
             ih.filter_keys(address, filter_keys)
-            for address in self.get_all_addresses_full_data()
+            for address in self.get_elastic_addresses_full_data()
         ]
         if cache:
             self._cache['addresses'] = addresses
@@ -419,7 +419,7 @@ class EC2(object):
                 self._collection.delete(hash_id)
                 deletes.append(hash_id)
 
-        for address in self.get_all_addresses_filtered_data():
+        for address in self.get_elastic_addresses_filtered_data():
             data = ih.rename_keys(address, **ADDRESS_KEY_NAME_MAPPING)
             existing = ah.AWS_IP.find(
                 'ip:{}, source:ec2'.format(data['ip']),
