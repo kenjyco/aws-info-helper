@@ -422,14 +422,15 @@ class EC2(object):
         for address in self.get_elastic_addresses_filtered_data():
             data = ih.rename_keys(address, **ADDRESS_KEY_NAME_MAPPING)
             existing = ah.AWS_IP.find(
-                'ip:{}, source:ec2'.format(data['ip']),
+                'ip:{}, source:eip'.format(data['ip']),
                 include_meta=False
             )
-            if not existing:
+            if not existing and data['instance']:
                 updates.append(ah.AWS_IP.add(
                     ip=data['ip'],
                     instance=data['instance'],
-                    source='ec2',
+                    source='eip',
+                    profile=self._profile
                 ))
 
         return {'updates': updates, 'deletes': deletes}
