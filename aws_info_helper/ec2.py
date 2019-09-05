@@ -405,13 +405,27 @@ class EC2(object):
             ids.add(data['id'])
             if not old_data:
                 updates.append(self._collection.add(**data))
+                if data['ip']:
+                  updates.append(ah.AWS_IP.add(
+                      ip=data['ip'],
+                      instance=data['id'],
+                      source='ec2',
+                      profile=self._profile
+                  ))
             else:
                 hash_id = old_data['_id']
                 try:
-                    data.pop(self._collection._unique_field)
+                    instance_id = data.pop(self._collection._unique_field)
                 except KeyError:
                     pass
                 updates.extend(self._collection.update(hash_id, **data))
+                if data['ip']:
+                    updates.append(ah.AWS_IP.add(
+                        ip=data['ip'],
+                        instance=instance_id,
+                        source='ec2',
+                        profile=self._profile
+                    ))
 
         for instance_id in ids_for_profile - ids:
             hash_id = self._collection.get_hash_id_for_unique_value(instance_id)
