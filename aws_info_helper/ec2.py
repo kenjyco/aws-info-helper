@@ -397,6 +397,8 @@ class EC2(object):
         ids = set()
         updates = []
         deletes = []
+        ip_hash_ids_to_delete = []
+
         for instance in self.get_all_instances_filtered_data():
             data = ih.cast_keys(instance, **INSTANCE_KEY_VALUE_CASTING)
             data = ih.rename_keys(data, **INSTANCE_KEY_NAME_MAPPING)
@@ -419,6 +421,11 @@ class EC2(object):
                 except KeyError:
                     pass
                 updates.extend(self._collection.update(hash_id, **data))
+                if data['ip'] != old_data['ip']:
+                    ip_hash_ids_to_delete.extend(ah.AWS_IP.find(
+                        'ip:{}, instance:{}'.format(old_data['ip'], old_data['id']),
+                        item_format='{_id}'
+                    ))
                 if data['ip']:
                     updates.append(ah.AWS_IP.add(
                         ip=data['ip'],
@@ -430,8 +437,17 @@ class EC2(object):
         for instance_id in ids_for_profile - ids:
             hash_id = self._collection.get_hash_id_for_unique_value(instance_id)
             if hash_id is not None:
+                old_data = self._collection.get(hash_id, 'id, ip')
+                ip_hash_ids_to_delete.extend(ah.AWS_IP.find(
+                    'ip:{}, instance:{}'.format(old_data['ip'], old_data['id']),
+                    item_format='{_id}'
+                ))
                 self._collection.delete(hash_id)
                 deletes.append(hash_id)
+
+        if ip_hash_ids_to_delete:
+            ah.AWS_IP.delete_many(*ip_hash_ids_to_delete)
+            deletes.extend(ip_hash_ids_to_delete)
 
         for address in self.get_elastic_addresses_filtered_data():
             data = ih.rename_keys(address, **ADDRESS_KEY_NAME_MAPPING)
