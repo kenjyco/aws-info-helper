@@ -14,7 +14,7 @@ else:
         AWS_IP = rh.Collection(
             'aws',
             'ip',
-            index_fields='ip, name, source',
+            index_fields='profile, ip, name, source, instance',
             reference_fields='instance--aws:ec2',
             insert_ts=True
         )
