@@ -427,12 +427,17 @@ class EC2(object):
                         item_format='{_id}'
                     ))
                 if data['ip']:
-                    updates.append(ah.AWS_IP.add(
-                        ip=data['ip'],
-                        instance=instance_id,
-                        source='ec2',
-                        profile=self._profile
-                    ))
+                    existing = ah.AWS_IP.find(
+                        'ip:{}, instance:{}'.format(data['ip'], instance_id),
+                        include_meta=False
+                    )
+                    if not existing:
+                        updates.append(ah.AWS_IP.add(
+                            ip=data['ip'],
+                            instance=instance_id,
+                            source='ec2',
+                            profile=self._profile
+                        ))
 
         for instance_id in ids_for_profile - ids:
             hash_id = self._collection.get_hash_id_for_unique_value(instance_id)
