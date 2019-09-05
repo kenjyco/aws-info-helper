@@ -1,10 +1,14 @@
 from setuptools import setup, find_packages
 
 
+with open('README.rst', 'r') as fp:
+    long_description = fp.read()
+
 setup(
     name='aws-info-helper',
     version='0.0.13',
     description='CLI helpers for AWS info gathering using Boto3',
+    long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
