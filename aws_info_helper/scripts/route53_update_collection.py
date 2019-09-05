@@ -17,7 +17,7 @@ from aws_info_helper import Route53, AWS_ROUTE53, AWS_IP, get_profiles
     help='Name of AWS profile to use'
 )
 def main(**kwargs):
-    """Update info in AWS_ROUTE53 redis-helper collection"""
+    """Update info in AWS_ROUTE53 and AWS_IP redis-helper collections"""
     if kwargs['all'] is True:
         for profile in get_profiles():
             route53 = Route53(profile)

@@ -17,7 +17,7 @@ from aws_info_helper import EC2, AWS_EC2, AWS_IP, get_profiles
     help='Name of AWS profile to use'
 )
 def main(**kwargs):
-    """Update info in AWS_EC2 redis-helper collection"""
+    """Update info in AWS_EC2 and AWS_IP redis-helper collections"""
     if kwargs['all'] is True:
         for profile in get_profiles():
             ec2 = EC2(profile)
