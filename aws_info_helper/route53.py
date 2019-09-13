@@ -1,4 +1,3 @@
-import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
@@ -44,7 +43,7 @@ RESOURCE_KEY_NAME_MAPPING = {
 
 class Route53(object):
     def __init__(self, profile_name='default'):
-        session = boto3.Session(profile_name=profile_name)
+        session = ah.get_session(profile_name)
         self._client = session.client('route53')
         self._profile = profile_name
         self._cache = {}

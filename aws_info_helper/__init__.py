@@ -1,9 +1,10 @@
 import re
 import os.path
+import boto3
 import settings_helper as sh
 import bg_helper as bh
 from os import walk
-from botocore.exceptions import EndpointConnectionError, ClientError
+from botocore.exceptions import EndpointConnectionError, ClientError, ProfileNotFound
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
@@ -39,6 +40,18 @@ SSH_USERS = [
     'fedora',
     'root',
 ]
+
+
+def get_session(profile_name='default'):
+    """Return a boto3.Session instance for profile"""
+    try:
+        session = boto3.Session(profile_name=profile_name)
+    except ProfileNotFound:
+        if profile_name == 'default':
+            session = boto3.Session()
+        else:
+            raise
+    return session
 
 
 def client_call(client, method_name, main_key='', **kwargs):

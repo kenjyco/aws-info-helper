@@ -1,4 +1,3 @@
-import boto3
 import aws_info_helper as ah
 import input_helper as ih
 import dt_helper as dh
@@ -40,7 +39,7 @@ BUCKET_KEY_NAME_MAPPING = {
 
 class S3(object):
     def __init__(self, profile_name='default'):
-        session = boto3.Session(profile_name=profile_name)
+        session = ah.get_session(profile_name)
         self._client = session.client('s3')
         self._profile = profile_name
         self._cache = {'_last_file':{}}

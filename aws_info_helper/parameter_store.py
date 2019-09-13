@@ -1,4 +1,3 @@
-import boto3
 import aws_info_helper as ah
 import input_helper as ih
 from functools import partial
@@ -6,7 +5,7 @@ from functools import partial
 
 class ParameterStore(object):
     def __init__(self, profile_name='default'):
-        session = boto3.Session(profile_name=profile_name)
+        session = ah.get_session(profile_name)
         self._client = session.client('ssm')
         self._profile = profile_name
         self._cache = {}
