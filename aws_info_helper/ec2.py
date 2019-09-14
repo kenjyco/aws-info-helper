@@ -174,6 +174,30 @@ class EC2(object):
             self._cache['instances'] = instances
         return instances
 
+    def get_all_instances_serialized_data(self, cache=False, filtered_data=None,
+                                          value_casting=INSTANCE_KEY_VALUE_CASTING,
+                                          name_mapping=INSTANCE_KEY_NAME_MAPPING):
+        """
+
+        - cache: if True, cache results in self._cache['instances']
+        - filtered_data: instance data from self.get_all_instances_filtered_data()
+        - value_casting: dict of key names and single-var funcs that return casted
+          value for that key name (default from INSTANCE_KEY_VALUE_CASTING variable)
+        - name_mapping: dict of key names and new key names they should be mapped to
+          (default from INSTANCE_KEY_NAME_MAPPING variable)
+        """
+        if filtered_data is None:
+            filtered_data = self.get_all_instances_filtered_data()
+        results = []
+        for instance in filtered_data:
+            data = ih.cast_keys(instance, **value_casting)
+            data = ih.rename_keys(data, **name_mapping)
+            data.update(dict(profile=self._profile))
+            results.append(data)
+        if cache:
+            self._cache['instances'] = results
+        return results
+
     def get_elastic_addresses_full_data(self, cache=False):
         """Get all elastic ip addresses with full data
 
