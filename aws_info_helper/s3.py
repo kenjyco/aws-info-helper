@@ -213,6 +213,21 @@ class S3(object):
             if found:
                 self._collection_last_file.delete(found[0]['_id'])
 
+    def clear_last_files_for_bucket(self, bucket):
+        """Clear any 'last file' info for bucket (across all prefixes)"""
+        # Technically, should try to iterate over keys in _cache['_last_file']
+        # and find the ones for that bucket only to delete... but meh
+        self._cache['_last_file'] = {}
+
+        if self._collection_last_file is not None:
+            found_ids = self._collection_last_file.find(
+                'profile:{}, bucket:{}'.format(self._profile, bucket),
+                item_format='{_id}',
+                limit=None
+            )
+            if found_ids:
+                self._collection_last_file.delete_many(*found_ids)
+
     def update_collection(self):
         """Update the rh.Collection object if redis-helper installed"""
         if self._collection is None:
