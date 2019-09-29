@@ -191,7 +191,7 @@ class S3(object):
     def get_file_lister_for_bucket(self, bucket, prefix='', limit=1500):
         """Return a func that will list next limit files for a bucket at a prefix
 
-        Wrapper to self._get_bucket_files_full_data
+        Wrapper to self.get_bucket_files_full_data
         """
         return partial(
             self.get_bucket_files_full_data,
