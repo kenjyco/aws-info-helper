@@ -6,14 +6,14 @@ with open('README.rst', 'r') as fp:
 
 setup(
     name='aws-info-helper',
-    version='0.0.15',
+    version='0.0.16',
     description='CLI helpers for AWS info gathering using Boto3',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/aws-info-helper',
-    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.15',
+    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.16',
     packages=find_packages(),
     install_requires=[
         'boto3',
