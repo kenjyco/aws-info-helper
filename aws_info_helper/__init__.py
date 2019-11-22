@@ -31,6 +31,7 @@ ROUTE53_ZONE_KEYS = get_setting('ROUTE53_ZONE_KEYS')
 ROUTE53_RESOURCE_KEYS = get_setting('ROUTE53_RESOURCE_KEYS')
 ROUTE53_RESOURCE_INFO_FORMAT = get_setting('ROUTE53_RESOURCE_INFO_FORMAT')
 IP_RX = re.compile(r'(?:\d{1,3}\.)+\d{1,3}')
+SSH_FAILED_OUTPUT_RX = re.compile(r'.*(Timeout|Permission denied|Connection closed by|Connection timed out).*', re.DOTALL)
 
 SSH_USERS = [
     'ec2-user',
@@ -112,7 +113,7 @@ def do_ssh(ip, pem_file, user, command='', timeout=None, verbose=False):
           the output will be returned
         - if no command is specified, the SSH session will be interactive
     """
-    ssh_command = 'ssh -i {} -o "StrictHostKeyChecking no" {}@{}'
+    ssh_command = 'ssh -i {} -o "StrictHostKeyChecking no" -o ConnectTimeout=2 {}@{}'
     cmd = ssh_command.format(pem_file, user, ip)
     if command:
         cmd = cmd + ' -t {}'.format(repr(command))
@@ -137,7 +138,7 @@ def determine_ssh_user(ip, pem_file, verbose=False):
         if verbose:
             print('  - trying {}'.format(user))
         output = do_ssh(ip, pem_file, user, 'ls', timeout=2, verbose=verbose)
-        if 'Timeout' not in output and 'Permission denied' not in output:
+        if not SSH_FAILED_OUTPUT_RX.match(output):
             return user
 
 
