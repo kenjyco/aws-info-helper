@@ -26,6 +26,10 @@ from aws_info_helper.ec2 import INSTANCE_KEY_NAME_MAPPING
     help='Do not prompt/confirm matched instances before issuing remote command'
 )
 @click.option(
+    '--private-ip', '-P', 'private_ip', is_flag=True, default=False,
+    help='SSH using private IP instead of public IP'
+)
+@click.option(
     '--profile', '-p', 'profile', default='default',
     help='Name of AWS profile to use'
 )
@@ -34,6 +38,7 @@ def main(**kwargs):
     ec2 = ah.EC2(kwargs['profile'])
     find = kwargs['find']
     command = kwargs['command']
+    use_private_ip = kwargs['private_ip']
     matched_instances = []
     local_pems = {}
 
@@ -55,7 +60,7 @@ def main(**kwargs):
             find = find + ', status:running'
         matched_instances = ah.AWS_EC2.find(
             find,
-            get_fields='name, status, pem, id, ip, sshuser',
+            get_fields='name, status, pem, id, ip, ip_private, sshuser',
             include_meta=False,
             limit=ah.AWS_EC2.size
         )
@@ -67,7 +72,7 @@ def main(**kwargs):
             ih.rename_keys(
                 ih.filter_keys(
                     instance,
-                    'Tags__Value, State__Name, KeyName, InstanceId, PublicIpAddress'
+                    'Tags__Value, State__Name, KeyName, InstanceId, PublicIpAddress, PrivateIpAddress'
                 ),
                 **INSTANCE_KEY_NAME_MAPPING
             )
@@ -86,7 +91,7 @@ def main(**kwargs):
 
     for instance in matched_instances:
         pem_name = instance['pem']
-        ip = instance['ip']
+        ip = instance['ip'] if not use_private_ip else instance['ip_private']
         if not ip:
             continue
         if pem_name not in local_pems:
