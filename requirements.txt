@@ -7,8 +7,3 @@ click>=6.0
 
 # For bonus features
 redis-helper
-
-# For development
-ipython
-pdbpp
-pytest
