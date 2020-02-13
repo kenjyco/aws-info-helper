@@ -13,7 +13,7 @@ else:
             'aws',
             'ec2',
             unique_field='id',
-            index_fields='profile, type, pem, az, subnet, ami, name, status',
+            index_fields='profile, type, pem, az, subnet, ami, name, status, sshuser',
             json_fields='sg',
             insert_ts=True
         )
