@@ -7,7 +7,7 @@ from aws_info_helper.ec2 import INSTANCE_KEY_NAME_MAPPING
 @click.command()
 @click.option(
     '--find', '-f', 'find', default='',
-    help='String with key:value pairs (separated by any of , ; |) for filtering instances'
+    help='Comma-separated string of values to filter instances by (name/id/ip)'
 )
 @click.option(
     '--command', '-c', 'command', default='',
@@ -56,19 +56,15 @@ def main(**kwargs):
 
     if ah.AWS_EC2 is not None:
         ec2.update_collection()
-        if not 'running' in find:
-            find = find + ', status:running'
-        matched_instances = ah.AWS_EC2.find(
-            find,
+        running_instances = ah.AWS_EC2.find(
+            'status:running',
             get_fields='name, status, pem, id, ip, ip_private, sshuser',
             include_meta=False,
             limit=ah.AWS_EC2.size
         )
     else:
         instances = ec2.get_all_instances_filtered_data()
-        if not 'running' in find:
-            find = find + ', State__Name:running'
-        matched_instances = [
+        running_instances = [
             ih.rename_keys(
                 ih.filter_keys(
                     instance,
@@ -76,8 +72,24 @@ def main(**kwargs):
                 ),
                 **INSTANCE_KEY_NAME_MAPPING
             )
-            for instance in ih.find_items(instances, find)
+            for instance in ih.find_items(instances, 'State__Name:running')
         ]
+
+    for term in ih.string_to_list(find):
+        for item in ih.find_items(running_instances, 'name:${}'.format(term)):
+            if item not in matched_instances:
+                matched_instances.append(item)
+        for item in ih.find_items(running_instances, 'id:${}'.format(term)):
+            if item not in matched_instances:
+                matched_instances.append(item)
+        for item in ih.find_items(running_instances, 'ip:${}'.format(term)):
+            if item not in matched_instances:
+                matched_instances.append(item)
+        for item in ih.find_items(running_instances, 'ip_private:${}'.format(term)):
+            if item not in matched_instances:
+                matched_instances.append(item)
+    if not find:
+        matched_instances = running_instances
 
     ih.sort_by_keys(matched_instances, 'name, ip')
 
@@ -85,7 +97,7 @@ def main(**kwargs):
         matched_instances = ih.make_selections(
             matched_instances,
             prompt='Select instances',
-            item_format='{id} ({name}) at {ip} using {pem}',
+            item_format='{id} ({name}) at {ip} ({ip_private}) using {pem}',
             wrap=False
         )
 
