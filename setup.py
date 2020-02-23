@@ -16,12 +16,12 @@ setup(
     download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.18',
     packages=find_packages(),
     install_requires=[
+        'bg-helper',
         'boto3',
+        'click>=6.0',
+        'dt-helper',
         'input-helper',
         'settings-helper',
-        'dt-helper',
-        'bg-helper',
-        'click>=6.0',
     ],
     include_package_data=True,
     package_dir={'': '.'},
@@ -30,12 +30,12 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'ah-info-ec2=aws_info_helper.scripts.ec2_info:main',
             'ah-collection-update-ec2=aws_info_helper.scripts.ec2_update_collection:main',
-            'ah-ssh-command-ec2=aws_info_helper.scripts.ec2_ssh_command:main',
-            'ah-info-route53=aws_info_helper.scripts.route53_info:main',
             'ah-collection-update-route53=aws_info_helper.scripts.route53_update_collection:main',
             'ah-collection-update-s3=aws_info_helper.scripts.s3_update_collection:main',
+            'ah-info-ec2=aws_info_helper.scripts.ec2_info:main',
+            'ah-info-route53=aws_info_helper.scripts.route53_info:main',
+            'ah-ssh-command-ec2=aws_info_helper.scripts.ec2_ssh_command:main',
         ],
     },
     classifiers=[

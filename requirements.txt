@@ -1,9 +1,7 @@
-boto3
-input-helper
-settings-helper
-dt-helper
 bg-helper
+boto3
 click>=6.0
-
-# For bonus features
+dt-helper
+input-helper
 redis-helper
+settings-helper
