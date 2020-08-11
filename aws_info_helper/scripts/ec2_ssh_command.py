@@ -40,7 +40,7 @@ def main(**kwargs):
     command = kwargs['command']
     use_private_ip = kwargs['private_ip']
     matched_instances = []
-    local_pems = {}
+    local_pems = ah.find_all_pems()
 
     if not command:
         if kwargs['non_interactive']:
@@ -106,21 +106,17 @@ def main(**kwargs):
         ip = instance['ip'] if not use_private_ip else instance['ip_private']
         if not ip:
             continue
-        if pem_name not in local_pems:
-            pem_file = ah.find_local_pem(pem_name)
-            if pem_file:
-                local_pems[pem_name] = pem_file
-            else:
-                print('Could not find local pem file for {}'.format(repr(pem_name)))
-                continue
-        else:
-            pem_file = local_pems[pem_name]
+        pem_file = local_pems.get(pem_name)
+        if not pem_file:
+            print('Could not find {} pem in ~/.ssh for {}.'.format(repr(pem_name), repr(instance)))
+            continue
 
         sshuser = instance.get('sshuser')
         if not sshuser:
             sshuser = ah.determine_ssh_user(ip, pem_file)
-        if not sshuser:
-            print('Could not determine SSH user for {}'.format(repr(instance)))
+        if not sshuser and kwargs['verbose']:
+            print('--------------------------------------------------')
+            print('\nCould not determine SSH user for {}'.format(repr(instance)))
             continue
         else:
             if ah.AWS_EC2:
@@ -134,6 +130,7 @@ def main(**kwargs):
                     instance['id'], instance['name'], ip, pem_name, sshuser
                 )
             )
+
         ah.do_ssh(ip, pem_file, sshuser, command, kwargs['timeout'], kwargs['verbose'])
 
 

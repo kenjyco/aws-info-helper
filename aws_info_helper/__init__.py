@@ -93,6 +93,18 @@ def get_profiles():
     return profiles
 
 
+def find_all_pems():
+    """Find all .pem files in ~/.ssh and return a dict with absolute paths"""
+    found = []
+    dirname = os.path.abspath(os.path.expanduser('~/.ssh'))
+    for dirpath, dirnames, filenames in walk(dirname, topdown=True):
+        found.extend([os.path.join(dirpath, f) for f in filenames if f.endswith('.pem')])
+    return {
+        os.path.basename(path).rsplit('.', 1)[0]: path
+        for path in sorted(found)
+    }
+
+
 def find_local_pem(pem):
     """Given the name of pem file, find its absolute path in ~/.ssh"""
     pem = pem if pem.endswith('.pem') else pem + '.pem'
