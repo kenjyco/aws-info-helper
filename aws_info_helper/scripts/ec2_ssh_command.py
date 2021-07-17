@@ -93,6 +93,12 @@ def main(**kwargs):
 
     ih.sort_by_keys(matched_instances, 'name, ip')
 
+    # # Uncomment and modify if you ever need to use a .pem file that
+    # # is different than what AWS thinks it should be
+    # for i, instance in enumerate(matched_instances):
+    #     if instance.get('pem', '') == 'old-pem':
+    #         matched_instances[i]['pem'] = 'new-pem'
+
     if kwargs['non_interactive'] is False:
         matched_instances = ih.make_selections(
             matched_instances,
