@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 with open('README.rst', 'r') as fp:
     long_description = fp.read()
 
+with open('requirements.txt', 'r') as fp:
+    requirements = fp.read().splitlines()
+
 setup(
     name='aws-info-helper',
     version='0.0.18',
@@ -15,14 +18,7 @@ setup(
     url='https://github.com/kenjyco/aws-info-helper',
     download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.0.18',
     packages=find_packages(),
-    install_requires=[
-        'bg-helper',
-        'boto3',
-        'click>=6.0',
-        'dt-helper',
-        'input-helper',
-        'settings-helper',
-    ],
+    install_requires=requirements,
     include_package_data=True,
     package_dir={'': '.'},
     package_data={
