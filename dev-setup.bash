@@ -21,4 +21,4 @@ PYTHON=$(dirname $PIP)/python
 $PYTHON -m pip install --upgrade pip wheel
 extra_packages=(ipython)
 [[ ! $(uname) =~ "MINGW" ]] && extra_packages+=(pdbpp)
-$PIP install ${extra_packages[@]} ${pip_args[@]} --editable .
+$PIP install ${extra_packages[@]} ${pip_args[@]} -r requirements-redis-helper.txt --editable .

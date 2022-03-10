@@ -3,5 +3,4 @@ boto3
 click>=6.0
 dt-helper
 input-helper
-redis-helper
 settings-helper
