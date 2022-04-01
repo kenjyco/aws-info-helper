@@ -23,7 +23,7 @@ setup(
     packages=find_packages(),
     install_requires=requirements,
     extras_require={
-        'redis': requirements_redis_helper,
+        'redis-helper': requirements_redis_helper,
     },
     include_package_data=True,
     package_dir={'': '.'},
