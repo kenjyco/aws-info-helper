@@ -52,5 +52,5 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Utilities',
     ],
-    keywords=['aws', 'boto', 'cli', 'command-line', 'helper', 'kenjyco']
+    keywords=['aws', 'boto', 'ec2', 's3', 'route53', 'cli', 'command-line', 'helper', 'kenjyco']
 )
