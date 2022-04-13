@@ -1,5 +1,6 @@
 import click
 import aws_info_helper as ah
+import bg_helper as bh
 import input_helper as ih
 from aws_info_helper.ec2 import INSTANCE_KEY_NAME_MAPPING
 
@@ -40,7 +41,7 @@ def main(**kwargs):
     command = kwargs['command']
     use_private_ip = kwargs['private_ip']
     matched_instances = []
-    local_pems = ah.find_all_pems()
+    local_pems = bh.tools.ssh_pem_files()
 
     if not command:
         if kwargs['non_interactive']:
@@ -50,7 +51,7 @@ def main(**kwargs):
             command = ih.user_input('Enter remote command')
             if not command:
                 print('No command specified')
-                resp = ih.user_input('Do you want interactive SSH session(s)? (y/n)')
+                resp = ih.user_input('Do you want an interactive SSH session(s)? (y/n)')
                 if resp.lower().startswith('y') is False:
                     return
 
@@ -119,7 +120,7 @@ def main(**kwargs):
 
         sshuser = instance.get('sshuser')
         if not sshuser:
-            sshuser = ah.determine_ssh_user(ip, pem_file)
+            sshuser = bh.tools.ssh_determine_aws_user_for_server(ip, pem_file)
         if not sshuser and not kwargs['quiet']:
             print('--------------------------------------------------')
             print('\nCould not determine SSH user for {}'.format(repr(instance)))
@@ -137,7 +138,7 @@ def main(**kwargs):
                 )
             )
 
-        ah.do_ssh(ip, pem_file, sshuser, command, kwargs['timeout'], kwargs['verbose'])
+        bh.tools.ssh_to_server(ip, user=sshuser, pem_file=pem_file, command=command, timeout=kwargs['timeout'], verbose=not kwargs['quiet'])
 
 
 if __name__ == '__main__':

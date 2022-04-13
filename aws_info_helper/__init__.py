@@ -31,16 +31,6 @@ ROUTE53_ZONE_KEYS = get_setting('ROUTE53_ZONE_KEYS')
 ROUTE53_RESOURCE_KEYS = get_setting('ROUTE53_RESOURCE_KEYS')
 ROUTE53_RESOURCE_INFO_FORMAT = get_setting('ROUTE53_RESOURCE_INFO_FORMAT')
 IP_RX = re.compile(r'(?:\d{1,3}\.)+\d{1,3}')
-SSH_FAILED_OUTPUT_RX = re.compile(r'.*(Timeout|Permission denied|Connection closed by|Connection timed out).*', re.DOTALL)
-
-SSH_USERS = [
-    'ec2-user',
-    'ubuntu',
-    'admin',
-    'centos',
-    'fedora',
-    'root',
-]
 
 
 def get_session(profile_name='default'):
@@ -91,67 +81,6 @@ def get_profiles():
         if match:
             profiles.append(match.group(1))
     return profiles
-
-
-def find_all_pems():
-    """Find all .pem files in ~/.ssh and return a dict with absolute paths"""
-    found = []
-    dirname = os.path.abspath(os.path.expanduser('~/.ssh'))
-    for dirpath, dirnames, filenames in walk(dirname, topdown=True):
-        found.extend([os.path.join(dirpath, f) for f in filenames if f.endswith('.pem')])
-    return {
-        os.path.basename(path).rsplit('.', 1)[0]: path
-        for path in sorted(found)
-    }
-
-
-def find_local_pem(pem):
-    """Given the name of pem file, find its absolute path in ~/.ssh"""
-    pem = pem if pem.endswith('.pem') else pem + '.pem'
-    dirname = os.path.abspath(os.path.expanduser('~/.ssh'))
-    for dirpath, dirnames, filenames in walk(dirname, topdown=True):
-        if pem in filenames:
-            return os.path.join(dirpath, pem)
-
-
-def do_ssh(ip, pem_file, user, command='', timeout=None, verbose=False):
-    """Actually SSH to a server
-
-    - ip: IP address
-    - pem_file: absolute path to pem file
-    - user: remote SSH user
-    - command: an optional command to run on the remote server
-        - if a command is specified, it will be run on the remote server and
-          the output will be returned
-        - if no command is specified, the SSH session will be interactive
-    """
-    ssh_command = 'ssh -i {} -o "StrictHostKeyChecking no" -o ConnectTimeout=2 {}@{}'
-    cmd = ssh_command.format(pem_file, user, ip)
-    if command:
-        cmd = cmd + ' -t {}'.format(repr(command))
-    if verbose:
-        print(cmd)
-
-    result = None
-    if command:
-        result = bh.run_output(cmd, timeout=timeout)
-        if verbose:
-            print(result)
-    else:
-        result = bh.run(cmd)
-    return result
-
-
-def determine_ssh_user(ip, pem_file, verbose=False):
-    """Determine which AWS default user"""
-    if verbose:
-        print('\nDetermining SSH user for {}'.format(ip))
-    for user in SSH_USERS:
-        if verbose:
-            print('  - trying {}'.format(user))
-        output = do_ssh(ip, pem_file, user, 'ls', timeout=2, verbose=verbose)
-        if not SSH_FAILED_OUTPUT_RX.match(output):
-            return user
 
 
 from aws_info_helper.ec2 import EC2, AWS_EC2
