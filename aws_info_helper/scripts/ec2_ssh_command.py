@@ -18,8 +18,8 @@ from aws_info_helper.ec2 import INSTANCE_KEY_NAME_MAPPING
     help='Number of seconds to wait before killing SSH command'
 )
 @click.option(
-    '--verbose', '-v', 'verbose', is_flag=True, default=False,
-    help='Show output'
+    '--quiet', '-q', 'quiet', is_flag=True, default=False,
+    help='Do not show output'
 )
 @click.option(
     '--non-interactive', '-n', 'non_interactive', is_flag=True, default=False,
@@ -120,7 +120,7 @@ def main(**kwargs):
         sshuser = instance.get('sshuser')
         if not sshuser:
             sshuser = ah.determine_ssh_user(ip, pem_file)
-        if not sshuser and kwargs['verbose']:
+        if not sshuser and not kwargs['quiet']:
             print('--------------------------------------------------')
             print('\nCould not determine SSH user for {}'.format(repr(instance)))
             continue
@@ -129,7 +129,7 @@ def main(**kwargs):
                 hash_id = ah.AWS_EC2.get_hash_id_for_unique_value(instance['id'])
                 ah.AWS_EC2.update(hash_id, sshuser=sshuser)
 
-        if kwargs['verbose']:
+        if not kwargs['quiet']:
             print('--------------------------------------------------')
             print(
                 '\nInstance {} ({}) at {} with pem {} and user {}\n'.format(
