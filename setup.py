@@ -13,7 +13,7 @@ with open('requirements-redis-helper.txt', 'r') as fp:
 setup(
     name='aws-info-helper',
     version='0.1.0',
-    description='CLI helpers for AWS info gathering using Boto3',
+    description='Helpers for working with Boto3 output and AWS resources ',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
