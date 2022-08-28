@@ -7,7 +7,7 @@ from os import makedirs
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     AWS_S3 = None
     AWS_S3_LAST_FILE = None
 else:

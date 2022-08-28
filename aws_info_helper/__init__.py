@@ -8,7 +8,7 @@ from botocore.exceptions import EndpointConnectionError, ClientError, ProfileNot
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     AWS_IP = None
 else:
     try:

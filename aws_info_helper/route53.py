@@ -5,7 +5,7 @@ from functools import partial
 try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     AWS_ROUTE53 = None
 else:
     try:
