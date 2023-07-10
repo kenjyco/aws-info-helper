@@ -12,14 +12,14 @@ with open('requirements-redis-helper.txt', 'r') as fp:
 
 setup(
     name='aws-info-helper',
-    version='0.1.1',
+    version='0.1.2',
     description='Helpers for working with Boto3 output and AWS resources ',
     long_description=long_description,
     author='Ken',
     author_email='kenjyco@gmail.com',
     license='MIT',
     url='https://github.com/kenjyco/aws-info-helper',
-    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.1.1',
+    download_url='https://github.com/kenjyco/aws-info-helper/tarball/v0.1.2',
     packages=find_packages(),
     install_requires=requirements,
     extras_require={
