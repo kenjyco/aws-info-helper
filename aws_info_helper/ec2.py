@@ -3,6 +3,12 @@ import input_helper as ih
 import dt_helper as dh
 from functools import partial
 try:
+    ModuleNotFoundError
+except NameError:
+    class ModuleNotFoundError(ImportError):
+        pass
+
+try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
 except (ImportError, ModuleNotFoundError):

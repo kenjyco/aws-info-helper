@@ -5,6 +5,12 @@ from functools import partial
 from os.path import isdir, dirname, basename, join
 from os import makedirs
 try:
+    ModuleNotFoundError
+except NameError:
+    class ModuleNotFoundError(ImportError):
+        pass
+
+try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
 except (ImportError, ModuleNotFoundError):

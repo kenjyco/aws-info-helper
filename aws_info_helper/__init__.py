@@ -6,6 +6,12 @@ import bg_helper as bh
 from os import walk
 from botocore.exceptions import EndpointConnectionError, ClientError, ProfileNotFound
 try:
+    ModuleNotFoundError
+except NameError:
+    class ModuleNotFoundError(ImportError):
+        pass
+
+try:
     import redis_helper as rh
     from redis import ConnectionError as RedisConnectionError
 except (ImportError, ModuleNotFoundError):
