@@ -8,7 +8,7 @@ Install with `pip`
 pip install aws-info-helper
 ```
 
-#### Or, install with redis-helper backend support
+### Or, install with redis-helper backend support
 
 ```
 pip install aws-info-helper[redis]
